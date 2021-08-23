@@ -1,18 +1,20 @@
-const express = require ("express");
+const express = require("express");
+require("dotenv").config();
+
 const app = express();
-const port = 80;
+const port = process.env.PORT || 5000;
 
-
-//request and response
 app.get("/", (req, res) => {
-    res.status(200).send("Hello World");
-})
-
-app.listen(port, () => {
-
-    console.log("App is online");
+    res.status(200).send("Hello world");
 });
 
+app.get("/about", (req, res) => {
+    res.status(200).send("This is the about route");
+});
+
+app.listen(port, () => {
+    console.log("App is online");
+});
 
 
 
