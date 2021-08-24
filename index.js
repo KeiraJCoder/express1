@@ -1,14 +1,38 @@
-
 const express = require("express");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 80;
 
 app.use(express.json()); // This ensures input is considered to be json
 
 app.get("/", (req, res) => {
     res.status(200).send("Hello world");
+});
+
+app.post("/register", (req, res) => {
+    bcrypt.genSalt(saltRounds, (err, salt) => {
+        if (err) {
+            res.status(500).json({"message": `Something went wrong`, "error": err});
+        }
+
+        bcrypt.hash(req.body.password, salt, (err, hash) => {
+            if (err) {
+                res.status(500).json({"message": `Something went wrong`, "error": err});
+            }
+
+            bcrypt.compare(req.body.checkPassword, hash, (err, result) => {
+                if (result) {
+                    res.status(201).json({"message": `Password ${req.body.checkPassword} matches ${hash}`});
+                } else {
+                    res.status(401).json({"message": `Password ${req.body.checkPassword} does not match ${hash}`});
+                }
+            });
+
+        });
+    });
 });
 
 app.post("/:username/", (req, res) => {
